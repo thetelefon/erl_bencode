@@ -1,8 +1,9 @@
+%% @doc Backend source for the encoding of erl_bencode
+
 -module(encode).
-
--export([start/1]).
-
+-export([encode/1]).
 -import(string, [concat/2]).
+
 
 -spec start_encode(Encode, List) -> RetList | {error, Reason} when
     Encode  :: term(),
@@ -26,66 +27,64 @@ determ_list_or_string(Encode, List) ->
         encode_list(Encode, List)
     end.
 
--spec encode_list(Encode, List) -> RetList when
+-spec encode_list(Encode, List) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     RetList :: list().
 encode_list(Encode, List) ->
-    TempHead = iter_list(Encode, concat(List, "l")),
-    NewHead = concat(TempHead, "e"),
-    NewHead.
+    {ok, TempHead} = iter_list(Encode, concat(List, "l")),
+    {ok, concat(TempHead, "e")}.
 
--spec iter_list(Encode, List) -> RetList when
+-spec iter_list(Encode, List) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     RetList :: list().
-iter_list([], List) -> List;
+iter_list([], List) -> {ok, List};
 iter_list([H | T], List) ->
-    NewHead = start_encode(H, List),
+    {ok, NewHead} = start_encode(H, List),
     iter_list(T, NewHead).
 
--spec encode_map(Encode, List) -> RetList when
+-spec encode_map(Encode, List) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     RetList :: list().
 encode_map(Encode, List) ->
     ListOfKeys = maps:keys(Encode),
-    TempHead = iter_map(Encode, concat(List, "d"), ListOfKeys),
-    NewHead = concat(TempHead, "e"),
-    NewHead.
+    {ok, TempHead} = iter_map(Encode, concat(List, "d"), ListOfKeys),
+    {ok, concat(TempHead, "e")}.
 
--spec iter_map(Encode, List, Keys) -> RetList when
+-spec iter_map(Encode, List, Keys) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     Keys    :: list(),
     RetList :: list().
-iter_map(_, List, []) -> List;
+iter_map(_, List, []) -> {ok, List};
 iter_map(Encode, List, [Key | Tail]) ->
-    TempHead = start_encode(Key, List),
-    NewHead = start_encode(maps:get(Key, Encode), TempHead),
+    {ok, TempHead} = start_encode(Key, List),
+    {ok, NewHead} = start_encode(maps:get(Key, Encode), TempHead),
     iter_map(Encode, NewHead, Tail).
 
--spec encode_int(Encode, List) -> RetList when
+-spec encode_int(Encode, List) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     RetList :: list.
 encode_int(Encode, List) ->
     IntList = integer_to_list(Encode),
-    concat(List, concat(concat("i", IntList), "e")).
+    {ok, concat(List, concat(concat("i", IntList), "e"))}.
 
--spec encode_string(Encode, List) -> RetList when
+-spec encode_string(Encode, List) -> {ok, RetList} when
     Encode  :: term(),
     List    :: list(),
     RetList :: list().
 encode_string(Encode, List) ->
     Len = string:length(Encode),
-    concat(List, concat(concat(integer_to_list(Len), ":"), Encode)).
+    {ok, concat(List, concat(concat(integer_to_list(Len), ":"), Encode))}.
 
--spec start(Encode) -> Value | {error, Reason} when
+-spec encode(Encode) -> {ok, Value} | {error, Reason} when
     Encode  :: term(),
     Value   :: list(),
     Reason  :: atom().
-start(Encode) ->
+encode(Encode) ->
     Value = start_encode(Encode, []),
     case Value of
         {error, _Reason} ->
