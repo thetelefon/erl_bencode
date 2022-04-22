@@ -1,8 +1,24 @@
+%% @author Robert Lasu
+%% @version 0.1.0
+%% @copyright 2022 Robert Lasu
+
 -module(bencode).
--export([encode_term/1, decode_term/1, encode_file/1, decode_file/1]).
+-export([encode/1, decode/1]).
 
-encode_term(Value) -> encode:start(Value).
-decode_term(Value) -> decode:start_term(Value).
+%% @doc Encodes `Value' to Bencode.
+%% @TODO: Known bug when encoding binaries of only numbers
+%% which should be string is not correctly encoded
+%% @end
+-spec encode(Value) -> BencodeStr when
+    Value       :: map() | list() | binary(),
+    BencodeStr  :: list().
+encode(Value) -> encode:start(Value).
 
-encode_file(FilePath) -> encode:start_file(FilePath).
-decode_file(FilePath) -> decode:start(FilePath).
+
+%% @doc Decodes `Value' to a valid erlang term().
+%% 
+%% @end
+-spec decode(Value) -> DecodedBencode when
+    Value           :: list() | atom(),
+    DecodedBencode  :: map() | list() | binary().
+decode(Value) -> decode:start(Value).

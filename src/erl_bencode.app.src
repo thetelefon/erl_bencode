@@ -1,6 +1,6 @@
 {application, erl_bencode,
- [{description, "A simple bencode, encoder and decoder"},
-  {vsn, "0.1.0"},
+ [{description, "A simple bencode encoder and decoder"},
+  {vsn, "0.1.1"},
   {registered, []},
   {applications,
    [kernel,
@@ -10,5 +10,5 @@
   {modules, []},
   {maintainers, ["Robert Lasu"]},
   {licenses, ["Apache-2.0"]},
-  {links, []}
+  {links, [{"Github", "http://github.com/thetelefon/erl_bencode.git"}]}
  ]}.
