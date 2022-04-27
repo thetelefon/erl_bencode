@@ -1,7 +1,7 @@
 %% @doc Backend source for the encoding of erl_bencode
 
 -module(encode).
--export([encode/1]).
+-export(['_encode'/1]).
 -import(string, [concat/2]).
 
 
@@ -80,11 +80,11 @@ encode_string(Encode, List) ->
     Len = string:length(Encode),
     {ok, concat(List, concat(concat(integer_to_list(Len), ":"), Encode))}.
 
--spec encode(Encode) -> {ok, Value} | {error, Reason} when
+-spec '_encode'(Encode) -> {ok, Value} | {error, Reason} when
     Encode  :: term(),
     Value   :: list(),
     Reason  :: atom().
-encode(Encode) ->
+'_encode'(Encode) ->
     Value = start_encode(Encode, []),
     case Value of
         {error, _Reason} ->

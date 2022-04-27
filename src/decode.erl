@@ -1,8 +1,9 @@
-%% @doc Backend source for the decoding of erl_bencode
+%% @private
 
 -module(decode).
+-include_lib("eunit/include/eunit.hrl").
 
--export([decode/1]).
+-export(['_decode'/1, get_string_tuple/2]).
 
 -spec read_next(Str) -> {Tail, Result} | {ok, Result} | {error, Reason} | {warning, Reason, Result} when
     Str     :: list(),
@@ -17,7 +18,7 @@ read_next([H | Tail]) when [H] == "e" -> {eof, Tail};
 read_next([H | Tail]) -> parse_result(read_string(Tail, list_to_integer([H]))).
 
 
-parse_result({error, Reason}) ->  exit({error, Reason});
+parse_result({error, Reason}) ->  {error, Reason};
 parse_result({[], Value}) -> {ok, Value};
 parse_result(Value) -> Value.
 
@@ -59,6 +60,7 @@ get_dict(Str) -> get_dict(Str, #{}).
     Tail    :: list(),
     RetDict :: map(),
     Reason  :: atom().
+get_dict(eof, _Dict) -> {error, no_end};
 get_dict([], _Dict) -> {error, no_end};
 get_dict([H | _], _Dict) when [H] == "d" -> {error, dict_as_key};
 get_dict([H | _], _Dict) when [H] == "l" -> {error, list_as_key};
@@ -95,6 +97,14 @@ get_key_and_value({Str, Key}, Dict) ->
     Tail    :: list(),
     Number  :: integer(),
     Reason  :: atom().
+read_number([45,45 | _]) -> {error, double_negation};
+read_number([45 | Tail]) -> 
+    {NewStr, Number} = read_number(Tail, 0),
+    if NewStr =:= error ->
+        {NewStr, Number};
+    true ->
+        {NewStr, -1*Number}
+    end;
 read_number(Str) -> read_number(Str, 0).
 
 
@@ -126,10 +136,11 @@ test_if_integer(Str) ->
         false
     end.
 
-
--spec read_string(Str, Number) -> RetStr | {error, Reason} when
+%% //TODO Handle exception when calling outside range
+-spec read_string(Str, Number) -> {Tail, RetStr} | {error, Reason} when
     Str     :: list(),
     Number  :: integer(),
+    Tail    :: list(),
     RetStr  :: list(),
     Reason  :: atom().
 read_string([H | Tail] = Str, Num) ->
@@ -143,7 +154,7 @@ read_string([H | Tail] = Str, Num) ->
         {error, not_a_number}
     end.
 
-
+%% //TODO #1 Handle exception when calling outside range
 -spec get_string_tuple(Str, Number) -> {Tail, Data} when
     Str     :: list(),
     Number  :: integer(),
@@ -157,11 +168,11 @@ get_string_tuple(String, Num) ->
             {lists:nthtail(Num, String), Data}
         end.
 
--spec decode(Value) -> {ok, Data} | {error, Reason} | {warning, Reason, Data} when
+-spec '_decode'(Value) -> {ok, Data} | {error, Reason} | {warning, Reason, Data} when
     Value   :: atom() | list(),
     Data    :: map() | list() | integer(),
     Reason  :: atom().
-decode(List) when is_list(List) -> read_next(List);
-decode(Filename) when is_atom(Filename)->
+'_decode'(List) when is_list(List) -> read_next(List);
+'_decode'(Filename) when is_atom(Filename)->
     {ok, Bin} = file:read_file(Filename),
     read_next(binary_to_list(Bin)).

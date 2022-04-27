@@ -17,7 +17,7 @@
 -spec encode(Value) -> {ok, BencodeStr} when
     Value       :: map() | list() | binary(),
     BencodeStr  :: list().
-encode(Value) -> encode:encode(Value).
+encode(Value) -> encode:'_encode'(Value).
 
 
 %% @doc Decodes `Value' to a valid erlang term().
@@ -26,4 +26,4 @@ encode(Value) -> encode:encode(Value).
 -spec decode(Value) -> {ok, DecodedBencode} when
     Value           :: list() | atom(),
     DecodedBencode  :: map() | list() | binary().
-decode(Value) -> decode:decode(Value).
+decode(Value) -> decode:'_decode'(Value).
