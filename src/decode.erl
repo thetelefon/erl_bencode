@@ -1,6 +1,7 @@
 %% @private
 
 -module(decode).
+-include_lib("eunit/include/eunit.hrl").
 
 -export(['_decode'/1]).
 
@@ -179,3 +180,65 @@ get_string_tuple(String, Num) ->
         {error, Reason} ->
             {error, Reason}
         end.
+
+
+%% ----------------------------------
+%%           Unit tests
+%% ----------------------------------
+
+read_next_test() ->
+    ?assert(read_next([])       =:= eof),
+    ?assert(read_next("i-23e")  =:= {ok, -23}),
+    ?assert(read_next("i--23e") =:= {error, double_negation}),
+    ?assert(read_next("i-23-e") =:= {error, badargs}),
+    ?assert(read_next("4:2453") =:= {ok, "2453"}),
+    ?assert(read_next("de")     =:= {ok, #{}}).
+
+parse_result_test() ->
+    ?assert(parse_result({error, reason}) =:= {error, reason}),
+    ?assert(parse_result({[], reason})    =:= {ok, reason}),
+    ?assert(parse_result("testing")       =:= "testing").
+
+get_list_test() ->
+    ?assert(get_list("i23elel2:23ee") =:= {[], [["23"],[], 23]}),
+    ?assert(get_list("e2:23")         =:= {"2:23", []}).
+
+get_dict_test() ->
+    ?assert(get_dict("e")                          =:= {[], #{}}),
+    ?assert(get_dict("lee")                        =:= {error, list_as_key}),
+    ?assert(get_dict("dee")                        =:= {error, dict_as_key}),
+    ?assert(get_dict("3:heje")                     =:= {error, no_end}),
+    ?assert(get_dict("")                           =:= {error, no_end}),
+    ?assert(get_dict("i23e4:teste")                =:= {[], #{23 => "test"}}),
+    ?assert(get_dict("i23e3:hay6:warden6:clyffee") =:= {[], #{23 => "hay", "warden" => "clyffe"}}).
+
+get_key_and_value_test() ->
+    ?assert(get_key_and_value({"i23ee", "test"}, #{}) =:= {[], #{"test" => 23}}),
+    ?assert(get_key_and_value({"lee", 23}, #{})       =:= {[],#{23 => []}}).
+
+read_number_test() ->
+    ?assert(read_number("2453e")  =:= {[], 2453}),
+    ?assert(read_number("e")      =:= {[], 0}),
+    ?assert(read_number("-2453e") =:= {[], -2453}),
+    ?assert(read_number("2-453e") =:= {error, badargs}),
+    ?assert(read_number("253")    =:= {error, no_end}),
+    ?assert(read_number("25 3")   =:= {error, badargs}),
+    ?assert(read_number("2d53")   =:= {error, badargs}),
+    ?assert(read_number("i253e")  =:= {error, badargs}).
+
+test_if_integer_test() ->
+    ?assert(test_if_integer(23)       =:= false),
+    ?assert(test_if_integer("23")     =:= true),
+    ?assert(test_if_integer("2he3j5") =:= false),
+    ?assert(test_if_integer("24 321") =:= false),
+    ?assert(test_if_integer(" 23")    =:= false).
+
+read_string_test() ->
+    ?assert(read_string("3:heji23e", 0)     =:= {"i23e", "hej"}),
+    ?assert(read_string("q6:wardeni23e", 0) =:= {error, not_a_number}),
+    ?assert(read_string("10:wardeni23e", 0) =:= {[], "wardeni23e"}).
+
+get_string_tuple_test() -> 
+    ?assert(get_string_tuple([], 10)            =:= {error, eof}),
+    ?assert(get_string_tuple("Hello World", 4)  =:= {"o World", "Hell"}),
+    ?assert(get_string_tuple("Hello World", 11) =:= {"", "Hello World"}).

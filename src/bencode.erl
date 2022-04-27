@@ -8,6 +8,8 @@
 %% ----------------------------------
 
 -module(bencode).
+-include_lib("eunit/include/eunit.hrl").
+
 -export([encode/1, decode/1]).
 
 %% @doc Encodes `Value' to Bencode.

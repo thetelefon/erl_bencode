@@ -1,6 +1,7 @@
 %% @private
 
 -module(encode).
+-include_lib("eunit/include/eunit.hrl").
 
 -export(['_encode'/1]).
 -import(string, [concat/2]).
@@ -98,3 +99,45 @@ encode_string(Encode, List) ->
         Value ->
             Value
         end.
+
+%% ----------------------------------
+%%           Unit tests
+%% ----------------------------------
+
+start_encode_test() ->
+    ?assert(start_encode(["test", 23, "warden", #{"clyffe" => 43}], []) =:= {ok, "l4:testi23e6:wardend6:clyffei43eee"}),
+    ?assert(start_encode(atom, [])                                      =:= {error, badargs}),
+    ?assert(start_encode("warden",[])                                   =:= {ok, "6:warden"}),
+    ?assert(start_encode(23, [])                                        =:= {ok, "i23e"}),
+    ?assert(start_encode(#{}, [])                                       =:= {ok, "de"}).
+
+determ_list_or_string_test() ->
+    ?assert(determ_list_or_string("Warden", [])   =:= {ok, "6:Warden"}),
+    ?assert(determ_list_or_string(["Warden"], []) =:= {ok, "l6:Wardene"}),
+    ?assert(determ_list_or_string(23, [])         =:= {error, not_list}),
+    ?assert(determ_list_or_string("", [])         =:= {ok, "le"}).
+
+
+encode_list_test() ->
+    ?assert(encode_list([23,43,54], []) =:= {ok, "li23ei43ei54ee"}),
+    ?assert(encode_list([],[])          =:= {ok, "le"}),
+    ?assert(encode_list(#{23=> 32}, []) =:= {error, not_list}).
+
+
+encode_map_test() ->
+    ?assert(encode_map(#{}, [])           =:= {ok, "de"}),
+    ?assert(encode_map(#{23 => "23"}, []) =:= {ok, "di23e2:23e"}),
+    ?assert(encode_map("Warden", [])      =:= {error, not_map}).
+
+
+encode_int_test() ->
+    ?assert(encode_int(23, [])               =:= {ok, "i23e"}),
+    ?assert(encode_int("23", [])             =:= {error, not_number}),
+    ?assert(encode_int(3125452313, "l3:hej") =:= {ok, "l3:heji3125452313e"}).
+
+
+encode_string_test() ->
+    ?assert(encode_string("hej", []) =:= {ok, "3:hej"}),
+    ?assert(encode_string("", [])    =:= {error, zero_length}),
+    ?assert(encode_string("23", [])  =:= {ok, "2:23"}),
+    ?assert(encode_string(#{}, [])   =:= {error, not_list}).
