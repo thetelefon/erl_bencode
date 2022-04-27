@@ -1,9 +1,8 @@
 %% @private
 
 -module(decode).
--include_lib("eunit/include/eunit.hrl").
 
--export(['_decode'/1, get_string_tuple/2]).
+-export(['_decode'/1]).
 
 -spec read_next(Str) -> {Tail, Result} | {ok, Result} | {error, Reason} | {warning, Reason, Result} when
     Str     :: list(),
@@ -15,7 +14,8 @@ read_next([H | Tail]) when [H] == "i" -> parse_result(read_number(Tail));
 read_next([H | Tail]) when [H] == "d" -> parse_result(get_dict(Tail));
 read_next([H | Tail]) when [H] == "l" -> parse_result(get_list(Tail));
 read_next([H | Tail]) when [H] == "e" -> {eof, Tail};
-read_next([H | Tail]) -> parse_result(read_string(Tail, list_to_integer([H]))).
+read_next([H | Tail]) -> parse_result(read_string(Tail, list_to_integer([H])));
+read_next(_) -> {error, badargs}.
 
 
 parse_result({error, Reason}) ->  {error, Reason};
@@ -136,7 +136,6 @@ test_if_integer(Str) ->
         false
     end.
 
-%% //TODO Handle exception when calling outside range
 -spec read_string(Str, Number) -> {Tail, RetStr} | {error, Reason} when
     Str     :: list(),
     Number  :: integer(),
@@ -174,5 +173,9 @@ get_string_tuple(String, Num) ->
     Reason  :: atom().
 '_decode'(List) when is_list(List) -> read_next(List);
 '_decode'(Filename) when is_atom(Filename)->
-    {ok, Bin} = file:read_file(Filename),
-    read_next(binary_to_list(Bin)).
+    case file:read_file(Filename) of
+        {ok, Bin} ->
+            read_next(binary_to_list(Bin));
+        {error, Reason} ->
+            {error, Reason}
+        end.
