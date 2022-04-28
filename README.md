@@ -1,5 +1,7 @@
 # erl_bencode
 
+![build](https://github.com/thetelefon/erl_bencode/actions/workflows/erlang.yml/badge.svg)
+![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
 An OTP library for encoding and decoding bencode.
 
