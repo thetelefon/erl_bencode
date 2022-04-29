@@ -1,8 +1,8 @@
 # erl_bencode
 
-![build](https://github.com/thetelefon/erl_bencode/actions/workflows/erlang.yml/badge.svg)
+[![build](https://github.com/thetelefon/erl_bencode/actions/workflows/erlang.yml/badge.svg)](https://github.com/thetelefon/erl_bencode)
 [![codecov](https://codecov.io/gh/thetelefon/erl_bencode/branch/master/graph/badge.svg?token=GWYPMBYL96)](https://codecov.io/gh/thetelefon/erl_bencode)
-![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 
 An OTP library for encoding and decoding bencode.
 
