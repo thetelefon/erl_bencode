@@ -1,9 +1,21 @@
 # erl_bencode
 
 ![build](https://github.com/thetelefon/erl_bencode/actions/workflows/erlang.yml/badge.svg)
+[![codecov](https://codecov.io/gh/thetelefon/erl_bencode/branch/master/graph/badge.svg?token=GWYPMBYL96)](https://codecov.io/gh/thetelefon/erl_bencode)
 ![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)
 
 An OTP library for encoding and decoding bencode.
+
+## Installation
+
+Add erl_bencode to your rebar.config:
+
+```
+{deps, [
+    erl_bencode
+    ]}.
+```
+
 
 ## Build
 

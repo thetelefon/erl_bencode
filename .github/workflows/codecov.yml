@@ -1,0 +1,31 @@
+name: codecov
+
+on:
+
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - name: Compile
+        run: rebar3 compile
+      - name: Run tests
+        run: rebar3 do eunit, cover
+
+      - name: Converts to JSON
+        run: rebar3 codecov analyze path="_build/test/cover"
+  
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV }} # not required for public repos
+          files: ./codecov.JSON # optional
+          verbose: true # optional (default = false)
