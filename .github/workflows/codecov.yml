@@ -27,5 +27,5 @@ jobs:
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV }} # not required for public repos
-          files: ./codecov.JSON # optional
+          files: ./codecov.json # optional
           verbose: true # optional (default = false)

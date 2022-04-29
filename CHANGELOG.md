@@ -10,6 +10,11 @@
 
 -->
 
+
+### v1.0.1
+
+- Added badges for tests and code coverage
+
 ### v1.0.0
 
 - Support for negative numbers.
