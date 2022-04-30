@@ -1,5 +1,4 @@
 %% @author Robert Lasu
-%% @version 0.1.0
 %% @copyright 2022 Robert Lasu
 %% @doc A simple bencode decoder and encoder.
 
