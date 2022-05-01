@@ -155,11 +155,12 @@ read_string([H | Tail] = Str, Num) ->
     end.
 
 %% //TODO #1 Handle exception when calling outside range
--spec get_string_tuple(Str, Number) -> {Tail, Data} when
+-spec get_string_tuple(Str, Number) -> {Tail, Data} | {error, Reason} when
     Str     :: list(),
     Number  :: integer(),
     Tail    :: list(),
-    Data    :: list().
+    Data    :: list(),
+    Reason  :: term().
 get_string_tuple(String, Num) ->
     case lists:sublist(String, Num) of
         [] ->
@@ -192,7 +193,8 @@ read_next_test() ->
     ?assert(read_next("i--23e") =:= {error, double_negation}),
     ?assert(read_next("i-23-e") =:= {error, badargs}),
     ?assert(read_next("4:2453") =:= {ok, "2453"}),
-    ?assert(read_next("de")     =:= {ok, #{}}).
+    ?assert(read_next("de")     =:= {ok, #{}}),
+    ?assert(read_next(#{})      =:= {error, badargs}).
 
 parse_result_test() ->
     ?assert(parse_result({error, reason}) =:= {error, reason}),
@@ -238,7 +240,8 @@ read_string_test() ->
     ?assert(read_string("q6:wardeni23e", 0) =:= {error, not_a_number}),
     ?assert(read_string("10:wardeni23e", 0) =:= {[], "wardeni23e"}).
 
-get_string_tuple_test() -> 
-    ?assert(get_string_tuple([], 10)            =:= {error, eof}),
+get_string_tuple_test() ->
+    ?assert(get_string_tuple("Hello World", 0)  =:= {error, eof}),
+    ?assert(get_string_tuple([], 10)            =:= {error, invalid_length}),
     ?assert(get_string_tuple("Hello World", 4)  =:= {"o World", "Hell"}),
     ?assert(get_string_tuple("Hello World", 11) =:= {"", "Hello World"}).

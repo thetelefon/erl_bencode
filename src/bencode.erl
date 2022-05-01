@@ -40,9 +40,9 @@ decode(Value) -> decode:'_decode'(Value).
 %% @private
 encode_test() ->
     Map = #{"Warden" => 23, 534 => "test", "A list" => [54, #{}, [], "clyffe"]},
-    {ok, EncodedMap} = encode:'_encode'(Map),
+    {ok, EncodedMap} = encode(Map),
     ?assert(EncodedMap =:= "di534e4:test6:A listli54edele6:clyffee6:Wardeni23ee"),
-    {error, Reason} = encode:'_encode'(map),
+    {error, Reason} = encode(map),
     ?assert(Reason =:= badargs).
 
 %% @private
@@ -50,6 +50,6 @@ decode_test() ->
     Bencode = "di534e4:test6:A listli54edele6:clyffee6:Wardeni23ee",
     {ok, Map} = decode:'_decode'(Bencode),
     ?assert(Map =:= #{534 => "test", "A list" => ["clyffe", [], #{}, 54], "Warden" => 23}),
-    {error, Reason} = decode:'_decode'(test_atom),
+    {error, Reason} = decode(test_atom),
     ?assert(Reason =:= enoent).
 
