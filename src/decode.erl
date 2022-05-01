@@ -154,13 +154,13 @@ read_string([H | Tail] = Str, Num) ->
         {error, not_a_number}
     end.
 
-%% //TODO #1 Handle exception when calling outside range
 -spec get_string_tuple(Str, Number) -> {Tail, Data} | {error, Reason} when
     Str     :: list(),
     Number  :: integer(),
     Tail    :: list(),
     Data    :: list(),
     Reason  :: term().
+get_string_tuple(String, Num) when length(String) < Num -> {error, invalid_length};
 get_string_tuple(String, Num) ->
     case lists:sublist(String, Num) of
         [] ->

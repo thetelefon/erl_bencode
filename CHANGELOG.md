@@ -10,6 +10,9 @@
 
 -->
 
+### v1.0.2
+
+- [Issue #1](https://github.com/thetelefon/erl_bencode/issues/1), fixed.
 
 ### v1.0.1
 
