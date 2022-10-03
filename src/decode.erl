@@ -41,7 +41,7 @@ get_list(Str, List) ->
         eof ->
             {error, eof};
         {eof, NewStr} ->
-            {NewStr, List};
+            {NewStr, lists:reverse(List)};
         {error, Reason} ->
             Reason;
         {NewStr, Data} ->
